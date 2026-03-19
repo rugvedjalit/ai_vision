@@ -1,0 +1,197 @@
+###############################################################################
+# AI Vision — 50-Stream Person Detection System
+# Docker Compose Orchestration
+###############################################################################
+# Services: Triton, DeepStream, Zookeeper, Kafka, MediaMTX, Frontend
+# Network:  vision_net (bridge)
+# Storage:  All volumes map to /data/AI/AI_Vision/
+###############################################################################
+
+networks:
+  vision_net:
+    driver: bridge
+
+services:
+
+  # ===========================================================================
+  # 1. Triton Inference Server — YOLOv8 TensorRT Engine
+  # ===========================================================================
+  triton:
+    image: nvcr.io/nvidia/tritonserver:24.12-py3
+    container_name: triton
+    command:
+      - tritonserver
+      - --model-repository=/models
+      - --log-verbose=0
+      - --strict-model-config=true
+      - --grpc-port=8001
+      - --http-port=8000
+      - --metrics-port=8002
+    volumes:
+      - /data/AI/AI_Vision/triton_models:/models:ro
+    networks:
+      - vision_net
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ===========================================================================
+  # 2. DeepStream Vision Engine — 50-Stream GStreamer Pipeline
+  # ===========================================================================
+  deepstream:
+    build:
+      context: .
+      dockerfile: deepstream/Dockerfile
+    container_name: deepstream
+    environment:
+      - STREAMS_FILE=/app/streams.txt
+      - NVINFERSERVER_CONFIG=/app/nvinferserver_config.pbtxt
+      - TRACKER_CONFIG=/app/tracker_config.yml
+      - KAFKA_BROKER=kafka:9092
+      - KAFKA_TOPIC=detections
+      - MEDIAMTX_URL=rtsp://mediamtx:8554
+      - MUXER_WIDTH=1920
+      - MUXER_HEIGHT=1080
+      - ENCODE_BITRATE=2000000
+    volumes:
+      - /data/AI/AI_Vision/sample_videos:/data/AI/AI_Vision/sample_videos:ro
+    networks:
+      - vision_net
+    depends_on:
+      triton:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      mediamtx:
+        condition: service_started
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ===========================================================================
+  # 3a. Zookeeper — Kafka Dependency
+  # ===========================================================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    volumes:
+      - /data/AI/AI_Vision/zookeeper_data:/var/lib/zookeeper/data
+      - /data/AI/AI_Vision/zookeeper_log:/var/lib/zookeeper/log
+    networks:
+      - vision_net
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ===========================================================================
+  # 3b. Kafka — Detection Event Message Broker
+  # ===========================================================================
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    ports:
+      - "5255:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:5255
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - /data/AI/AI_Vision/kafka_data:/var/lib/kafka/data
+    networks:
+      - vision_net
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ===========================================================================
+  # 4. MediaMTX — WebRTC Bridge (RTSP ingest → WebRTC egress)
+  # ===========================================================================
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mediamtx
+    ports:
+      - "5256:8554"   # RTSP (receives H.264 from DeepStream)
+      - "5257:8889"   # WebRTC WHEP (serves browser frontend)
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+    networks:
+      - vision_net
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ===========================================================================
+  # 5. Web Dashboard — React Frontend with WebRTC Player
+  # ===========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5258:80"
+    networks:
+      - vision_net
+    depends_on:
+      - mediamtx
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"

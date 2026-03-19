@@ -1,0 +1,44 @@
+name: "yolov8"
+platform: "tensorrt_plan"
+max_batch_size: 50
+
+input [
+  {
+    name: "images"
+    data_type: TYPE_FP16
+    dims: [ 3, 640, 640 ]
+  }
+]
+
+output [
+  {
+    name: "output0"
+    data_type: TYPE_FP16
+    dims: [ 84, 8400 ]
+  }
+]
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU
+    gpus: [ 0 ]
+  }
+]
+
+dynamic_batching {
+  preferred_batch_size: [ 16, 32, 50 ]
+  max_queue_delay_microseconds: 5000
+}
+
+optimization {
+  cuda {
+    graphs: true
+    busy_wait_events: true
+  }
+}
+
+parameters {
+  key: "TRT_ENGINE_CACHE_ENABLE"
+  value: { string_value: "1" }
+}

@@ -1,0 +1,65 @@
+# ============================================================================
+# Stream Source Configuration — 50-Stream Person Detection System
+# ============================================================================
+# One URI per line. Supports:
+#   - RTSP:  rtsp://user:pass@host:port/path
+#   - File:  file:///data/AI/AI_Vision/sample_videos/filename.mp4
+#
+# Lines starting with '#' or blank lines are ignored.
+# For production, replace these with your actual camera RTSP URLs.
+# File sources loop infinitely (file-loop=True) for demo/testing.
+# ============================================================================
+
+# --- Demo File Sources (loop infinitely) ---
+file:///data/AI/AI_Vision/sample_videos/demo1.mp4
+file:///data/AI/AI_Vision/sample_videos/demo2.mp4
+file:///data/AI/AI_Vision/sample_videos/demo3.mp4
+file:///data/AI/AI_Vision/sample_videos/demo4.mp4
+file:///data/AI/AI_Vision/sample_videos/demo5.mp4
+
+# --- RTSP Camera Sources (examples — replace with real URLs) ---
+# rtsp://admin:password@192.168.1.100:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.101:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.102:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.103:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.104:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.105:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.106:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.107:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.108:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.109:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.110:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.111:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.112:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.113:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.114:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.115:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.116:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.117:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.118:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.119:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.120:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.121:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.122:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.123:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.124:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.125:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.126:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.127:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.128:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.129:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.130:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.131:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.132:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.133:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.134:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.135:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.136:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.137:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.138:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.139:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.140:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.141:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.142:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.143:554/Streaming/Channels/101
+# rtsp://admin:password@192.168.1.144:554/Streaming/Channels/101

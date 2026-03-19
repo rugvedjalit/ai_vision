@@ -1,0 +1,47 @@
+###############################################
+# MediaMTX Configuration — AI Vision System
+###############################################
+
+# Global settings
+logLevel: info
+logDestinations: [stdout]
+
+# RTSP server — receives H.264 streams from DeepStream
+rtsp: yes
+rtspAddress: :8554
+protocols: [tcp, udp]
+rtspRangeType: clock
+
+# RTMP — disabled (not needed)
+rtmp: no
+
+# HLS — disabled (using WebRTC instead)
+hls: no
+
+# WebRTC server — serves streams to browser frontend
+webrtc: yes
+webrtcAddress: :8889
+webrtcEncryption: no
+webrtcICEServers2: []
+webrtcIPsFromInterfaces: yes
+webrtcIPsFromInterfacesList: []
+webrtcAdditionalHosts: []
+webrtcLocalUDPAddress: :8889
+webrtcLocalTCPAddress: :8889
+
+# SRT — disabled
+srt: no
+
+# API
+api: yes
+apiAddress: :9997
+
+# Read/write buffer sizes (generous for 50 concurrent streams)
+readBufferCount: 2048
+writeQueueSize: 512
+
+# Path configuration — auto-accept any stream name matching pattern
+paths:
+  all_others:
+  # Catch-all: auto-creates paths when DeepStream pushes to
+  # rtsp://mediamtx:8554/stream0 .. /stream49
