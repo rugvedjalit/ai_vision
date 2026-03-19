@@ -7,41 +7,36 @@ logLevel: info
 logDestinations: [stdout]
 
 # RTSP server — receives H.264 streams from DeepStream
-rtsp: yes
+rtsp: true
 rtspAddress: :8554
-protocols: [tcp, udp]
+rtspTransports: [udp, multicast, tcp]
 rtspRangeType: clock
 
 # RTMP — disabled (not needed)
-rtmp: no
+rtmp: false
 
 # HLS — disabled (using WebRTC instead)
-hls: no
+hls: false
 
 # WebRTC server — serves streams to browser frontend
-webrtc: yes
+webrtc: true
 webrtcAddress: :8889
-webrtcEncryption: no
+webrtcEncryption: "no"
 webrtcICEServers2: []
-webrtcIPsFromInterfaces: yes
+webrtcIPsFromInterfaces: true
 webrtcIPsFromInterfacesList: []
 webrtcAdditionalHosts: []
-webrtcLocalUDPAddress: :8889
-webrtcLocalTCPAddress: :8889
 
 # SRT — disabled
-srt: no
+srt: false
 
 # API
-api: yes
+api: true
 apiAddress: :9997
 
-# Read/write buffer sizes (generous for 50 concurrent streams)
-readBufferCount: 2048
+# Output buffer queue size (per-stream write queue depth)
 writeQueueSize: 512
 
-# Path configuration — auto-accept any stream name matching pattern
+# Path configuration — auto-accept any stream name
 paths:
   all_others:
-  # Catch-all: auto-creates paths when DeepStream pushes to
-  # rtsp://mediamtx:8554/stream0 .. /stream49
