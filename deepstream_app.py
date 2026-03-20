@@ -509,7 +509,7 @@ def main():
     tracker.set_property("gpu-id", 0)
     tracker.set_property("ll-lib-file", TRACKER_LIB)
     tracker.set_property("ll-config-file", TRACKER_CONFIG)
-    tracker.set_property("enable-batch-process", True)
+    # Note: enable-batch-process was removed in DS 7.x (always on by default)
     pipeline.add(tracker)
 
     # --- On-Screen Display ---
