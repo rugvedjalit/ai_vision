@@ -11,14 +11,14 @@ BaseConfig:
   matchingScoreWeight4SizeSimilarity: 0.2
   matchingScoreWeight4Iou: 0.2
   minTrackingConfidenceDuringInactive: 0.4
-  maxShadowTrackingAge: 30
+  maxShadowTrackingAge: 15
   probationAge: 3
   earlyTerminationAge: 1
   useUniqueID: 1
 
 TargetManagement:
   enableBboxUnClipping: 1
-  maxTargetsPerStream: 150
+  maxTargetsPerStream: 100
   minIouDiff4NewTarget: 0.5
   preserveStreamUpdateOrder: 0
 
@@ -41,7 +41,7 @@ ReID:
   batchSize: 100
   workspaceSize: 1000000
   reidFeatureSize: 128
-  reidHistorySize: 100
+  reidHistorySize: 50
 
 VisualTracker:
   useVisualTracker: 0

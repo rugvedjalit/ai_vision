@@ -1,7 +1,10 @@
 FROM nvcr.io/nvidia/deepstream:7.1-triton-multiarch
 
-# Install Python dependencies for Kafka metadata handling
-RUN pip3 install --no-cache-dir kafka-python-ng
+# Install Python dependencies
+# - numpy: YOLOv8 tensor parsing (replaces C++ custom parser)
+# - kafka-python-ng: Kafka metadata producer
+# - pyds: DeepStream Python bindings (if not bundled in base image)
+RUN pip3 install --no-cache-dir numpy kafka-python-ng pyds
 
 # Application working directory
 WORKDIR /app

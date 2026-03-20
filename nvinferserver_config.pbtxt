@@ -11,6 +11,7 @@ infer_config {
         enable_cuda_buffer_sharing: false
       }
     }
+    output_mem_type: MEMORY_TYPE_DEFAULT
   }
   preprocess {
     network_format: IMAGE_FORMAT_RGB
@@ -25,22 +26,10 @@ infer_config {
   }
   postprocess {
     labelfile_path: ""
-    detection {
-      num_detected_classes: 80
-      custom_parse_bbox_func: "NvDsInferParseYoloV8"
-      per_class_params {
-        key: 0
-        value { pre_threshold: 0.4 }
-      }
-      nms {
-        confidence_threshold: 0.4
-        iou_threshold: 0.45
-        topk: 300
-      }
-    }
+    other {}
   }
   extra {
     copy_input_to_host_buffers: false
-    output_buffer_pool_size: 64
+    output_buffer_pool_size: 128
   }
 }
